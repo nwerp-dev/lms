@@ -24,9 +24,23 @@ services:
     working_dir: /home/frappe
     volumes:
       - .:/workspace
-    ports:
-      - 8000:8000
-      - 9000:9000
+    expose:
+      - 8000
+      - 9000
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.lms.rule=Host(`lms.coagro.work`)
+      - traefik.http.routers.lms.entrypoints=websecure
+      - traefik.http.routers.lms.tls=true
+      - traefik.http.services.lms.loadbalancer.server.port=8000
+    networks:
+      - default
+      - dokploy-network
 
 volumes:
   mariadb-data:
+
+networks:
+  dokploy-network:
+    external: true
